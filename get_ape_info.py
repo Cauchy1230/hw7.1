@@ -17,41 +17,64 @@ with open('/home/codio/workspace/abi.json', 'r') as f:
 
 ############################
 # Connect to an Ethereum node
-
-api_url = f"https://mainnet.infura.io/v3/05d545fd8cc5446a9b6e02369555a845"
-web3 = Web3(HTTPProvider(api_url))
-assert web3.isConnected(), f"Failed to connect to provider at {url}"
-
-print("Successfully connected to Ethereum node.")
+token = "Mwb3juVAfI1g2RmA1JCGdYk-2_BmFrnLOtbomP1oDa4"
+api_url = f"https://c2emjgrvmi7cabd41mpg.bdnodes.net?auth={token}"
+provider = HTTPProvider(api_url)
+web3 = Web3(provider)
 
 
 def get_ape_info(apeID):
-	assert isinstance(apeID, int), f"{apeID} is not an int"
-	assert 1 <= apeID, f"{apeID} must be at least 1"
 
-	data = {'owner': "", 'image': "", 'eyes': ""}
+    token = "Mwb3juVAfI1g2RmA1JCGdYk-2_BmFrnLOtbomP1oDa4"
+    api_url = f"https://c2emjgrvmi7cabd41mpg.bdnodes.net?auth={token}"
+    provider = HTTPProvider(api_url)
+    web3 = Web3(provider)
 
-	# YOUR CODE HERE
+    assert isinstance(apeID, int), f"{apeID} is not an int"
+    assert 1 <= apeID, f"{apeID} must be at least 1"
 
-	contract = web3.eth.contract(address=contract_address, abi=abi)
-	URI = contract.functions.tokenURI(apeID).call()
-	cid = "QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/" + str(apeID)
-	params = (('arg', cid),)
-	response = requests.post('https://ipfs.infura.io:5001/api/v0/cat', params=params)
-	response_dict = response.json()
+    data = {'owner': "", 'image': "", 'eyes': ""}
 
-	data['owner'] = contract.functions.ownerOf(apeID).call()
-	data['image'] = response_dict.get('image')
+    # YOUR CODE HERE
 
-	attributes = response_dict.get('attributes')
-	for attribute in attributes:
-		if attribute.get('trait_type') == 'Eyes':
-			data['eyes'] = attribute.get('value')
-			break
-	print(data)
+    url = r"https://gateway.pinata.cloud/ipfs/QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/"
+    url_content = url + str(apeID)
+    request = requests.get(url_content)
+    data_1 = request.json()
+    image = data_1['image']
+    attributes = data_1['image']
+    image = data_1['image']
 
-	assert isinstance(data, dict), f'get_ape_info{apeID} should return a dict'
-	assert all([a in data.keys() for a in
-				['owner', 'image', 'eyes']]), f"return value should include the keys 'owner','image' and 'eyes'"
-	return data
+
+    for attr in data_1['attributes']:
+
+        if attr['trait_type'] == 'Eyes':
+            eyes = attr['value']
+
+
+
+
+
+
+    contract = web3.eth.contract(address=contract_address, abi=abi)
+    owner = contract.functions.ownerOf(apeID).call()
+
+    data['owner'] = owner
+    data['image'] = image
+    data['eyes'] = eyes
+
+
+    assert isinstance(data, dict), f'get_ape_info{apeID} should return a dict'
+    assert all([a in data.keys() for a in
+                ['owner', 'image', 'eyes']]), f"return value should include the keys 'owner','image' and 'eyes'"
+    print(data['owner'],data['image'],data['eyes'] )
+    return data
+
+def main():
+    bayc_address = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
+    get_ape_info(6335)
+
+
+if __name__ == '__main__':
+    main()
 
